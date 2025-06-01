@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>josh morris - industrial design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles and CSS variables for theme management */
+        :root {
+            --grid-unit: 25px; /* Base unit for spacing */
+
+            /* Light Mode (Default Fallback) */
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --transition-duration: 0.3s;
+            --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        /* Dark Mode specific variables, applied when data-theme='dark' */
+        html[data-theme='dark'] {
+            --bg-color: #121212; /* Dark background */
+            --text-color: #e0e0e0; /* Light text */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Mono', monospace; /* Apply Space Mono font */
+            background-color: var(--bg-color); /* Background color from CSS variable */
+            color: var(--text-color); /* Text color from CSS variable */
+            min-height: 100vh; /* Full viewport height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: lowercase; /* All text in lowercase */
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        /* Navigation styles */
+        nav {
+            position: absolute;
+            top: calc(var(--grid-unit) * 2); /* 50px */
+            left: calc(var(--grid-unit) * 2); /* 50px */
+            margin-bottom: 0;
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: var(--text-color); /* Text color from CSS variable */
+            font-size: 1rem;
+            font-weight: 400; /* Regular weight for navigation */
+            line-height: var(--grid-unit); /* 25px */
+            margin-bottom: 0;
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main content styles */
+        main {
+            position: absolute; /* Absolute positioning for bottom-left */
+            bottom: calc(var(--grid-unit) * 2); /* 50px from bottom */
+            left: calc(var(--grid-unit) * 2); /* 50px from left */
+            text-align: left; /* Align text to the left */
+            display: flex; /* Use flexbox for horizontal alignment */
+            align-items: baseline; /* Align items to their text baseline */
+            gap: calc(var(--grid-unit) * 0.5); /* Small gap between name and subtitle */
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        main h1 {
+            font-size: 2rem; /* Much smaller font size for name */
+            font-weight: 700; /* Bold weight for the name */
+            line-height: 1; /* Tighter line height */
+            margin: 0;
+            color: var(--text-color); /* Text color from CSS variable */
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        .subtitle {
+            font-size: 1rem; /* Smaller subtitle font size */
+            font-weight: 400; /* Regular weight for subtitle */
+            line-height: 1; /* Tighter line height */
+            margin: 0; /* Remove top margin */
+            color: var(--text-color); /* Text color from CSS variable */
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        /* Theme Toggle Button styles */
+        .theme-toggle {
+            position: fixed;
+            top: var(--grid-unit); /* Moved to top */
+            right: var(--grid-unit); /* 25px */
+            cursor: pointer;
+            z-index: 50; /* Always on top */
+            background-color: transparent;
+            border: none;
+            padding: 8px; /* Clickable area */
+            color: var(--text-color); /* Icon color from CSS variable */
+            transition: all var(--transition-duration) var(--transition-timing);
+            border-radius: 0.5rem; /* rounded-lg equivalent */
+        }
+
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+            /* SVGs use stroke="currentColor" and fill="none" */
+            /* The 'color' property on .theme-toggle will define currentColor */
+        }
+
+        /* Manage icon visibility based on data-theme attribute */
+        html[data-theme='light'] .theme-toggle #icon-sun { display: none; }
+        html[data-theme='light'] .theme-toggle #icon-moon { display: block; }
+
+        html[data-theme='dark'] .theme-toggle #icon-sun { display: block; }
+        html[data-theme='dark'] .theme-toggle #icon-moon { display: none; }
+
+        /* Responsive adjustments using media queries */
+        @media (max-width: 768px) {
+            main {
+                bottom: var(--grid-unit);
+                left: var(--grid-unit);
+                gap: calc(var(--grid-unit) * 0.25);
+            }
+            main h1 {
+                font-size: 1.5rem;
+            }
+            .subtitle {
+                font-size: 0.8rem;
+            }
+            nav {
+                top: var(--grid-unit); /* 25px */
+                left: var(--grid-unit); /* 25px */
+            }
+            .theme-toggle {
+                top: calc(var(--grid-unit) * 0.5); /* 12.5px */ /* Adjust for mobile top */
+                right: calc(var(--grid-unit) * 0.5); /* 12.5px */
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                bottom: calc(var(--grid-unit) * 0.5);
+                left: calc(var(--grid-unit) * 0.5);
+                flex-direction: column; /* Stack name and subtitle vertically */
+                align-items: flex-start; /* Align stacked items to the left */
+                gap: 0; /* Remove gap when stacked */
+            }
+            main h1 {
+                font-size: 1.2rem;
+            }
+            .subtitle {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Braun Style Clock */
+        #clockCanvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px; /* Adjust size as needed */
+            height: 300px; /* Adjust size as needed */
+            border: 4px solid var(--text-color); /* Clock border color */
+            border-radius: 50%; /* Make it circular */
+            z-index: 5; /* Below nav/main, above body background */
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="physicsCanvas"></canvas>
+
+    <nav>
+        <a href="work.html">work_</a>
+        <a href="about.html">about_</a>
+        <a href="contact.html">contact_</a>
+    </nav>
+
+    <main>
+        <h1>josh morris</h1>
+        <p class="subtitle">industrial designer</p>
+    </main>
+
+    <button id="darkModeToggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle theme" aria-pressed="false">
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
+
+    <canvas id="clockCanvas"></canvas>
+
+    <script>
+        // Get references to DOM elements
+        const htmlElement = document.documentElement;
+        const themeToggleButton = document.getElementById('darkModeToggle');
+
+        // --- Theme Toggle Logic ---
+        function applyThemePreference(theme) {
+            htmlElement.setAttribute('data-theme', theme);
+            themeToggleButton.setAttribute('aria-pressed', theme === 'dark');
+        }
+
+        function setThemeAndStore(theme) {
+            applyThemePreference(theme);
+            // Note: localStorage removed for Claude.ai compatibility
+        }
+
+        // Initialize theme on page load
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+
+        // Listen for changes in system color scheme preference
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            applyThemePreference(e.matches ? 'dark' : 'light');
+        });
+
+        // Event listener for theme toggle button
+        themeToggleButton.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setThemeAndStore(newTheme);
+        });
+
+        // --- Functional Braun Style Clock ---
+        // Wait for DOM content to load before initializing and drawing the clock
+        document.addEventListener('DOMContentLoaded', () => {
+            const clockCanvas = document.getElementById('clockCanvas');
+            // Ensure canvas and context are available
+            if (!clockCanvas) {
+                console.error("Clock canvas element not found!");
+                return;
+            }
+            const ctx = clockCanvas.getContext('2d');
+
+            let radius; // Declare radius here to be accessible by all functions
+
+            // Function to get current text color from CSS variable
+            function getCurrentTextColor() {
+                return getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+            }
+
+            // Function to draw the clock face (circle and center dot)
+            function drawFace(ctx, radius) {
+                // Draw inner circle (background)
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white'; // Clock face background
+                ctx.fill();
+
+                // Draw border is handled by CSS #clockCanvas border
+
+                // Center dot - Braun style is often simple, just a dot
+                ctx.beginPath();
+                ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+                ctx.fillStyle = getCurrentTextColor(); // Use current text color
+                ctx.fill();
+            }
+
+            // Function to draw the clock hands based on current time
+            function drawTime(ctx, radius) {
+                const now = new Date();
+                let hour = now.getHours();
+                let minute = now.getMinutes();
+                let second = now.getSeconds();
+
+                const textColor = getCurrentTextColor();
+
+                // Hour hand
+                hour = hour % 12;
+                const hourAngle = (hour * Math.PI / 6) + (minute * Math.PI / 360) + (second * Math.PI / 21600);
+                drawHand(ctx, hourAngle, radius * 0.5, radius * 0.05, textColor);
+
+                // Minute hand
+                const minuteAngle = (minute * Math.PI / 30) + (second * Math.PI / 1800);
+                drawHand(ctx, minuteAngle, radius * 0.8, radius * 0.05, textColor);
+
+                // Second hand
+                const secondAngle = (second * Math.PI / 30);
+                drawHand(ctx, secondAngle, radius * 0.9, radius * 0.02, 'red');
+            }
+
+            // Helper function to draw a hand
+            function drawHand(ctx, pos, length, width, color) {
+                // Save the current context state
+                ctx.save();
+                
+                ctx.beginPath();
+                ctx.lineWidth = width;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = color;
+                ctx.moveTo(0, 0);
+                ctx.rotate(pos);
+                ctx.lineTo(0, -length);
+                ctx.stroke();
+
+                // Draw small circle at the base of the hand (Braun style)
+                ctx.beginPath();
+                ctx.arc(0, 0, width * 1.5, 0, 2 * Math.PI);
+                ctx.fillStyle = color; // Match hand color
+                ctx.fill();
+
+                // Restore the context state (this undoes the rotation and resets styles)
+                ctx.restore();
+            }
+
+            // Function to draw the complete clock
+            function drawClock() {
+                // Clear the canvas before drawing
+                ctx.clearRect(-clockCanvas.width / 2, -clockCanvas.height / 2, clockCanvas.width, clockCanvas.height);
+
+                // Redraw the face and time
+                drawFace(ctx, radius);
+                drawTime(ctx, radius);
+            }
+
+            // --- Handle Window Resizing for Clock ---
+            const resizeClockCanvas = () => {
+                // Get the current display size of the canvas from CSS
+                const displayWidth = clockCanvas.offsetWidth;
+                const displayHeight = clockCanvas.offsetHeight;
+
+                // If the canvas drawing buffer size doesn't match the display size, update it
+                if (clockCanvas.width !== displayWidth || clockCanvas.height !== displayHeight) {
+                    clockCanvas.width = displayWidth;
+                    clockCanvas.height = displayHeight;
+
+                    // Recalculate radius and reset/re-apply translation after resizing
+                    radius = Math.min(clockCanvas.width, clockCanvas.height) / 2; // Use the smaller dimension for radius
+                    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformation
+                    ctx.translate(clockCanvas.width / 2, clockCanvas.height / 2); // Translate to the new center
+                    radius = radius * 0.90; // Adjust radius for padding/border if needed
+
+                    drawClock(); // Redraw clock after resize
+                }
+            };
+
+            // Initial setup and draw
+            resizeClockCanvas(); // Set initial size and draw
+            setInterval(drawClock, 1000); // Update every second
+
+            // Listen for window resize events
+            window.addEventListener('resize', resizeClockCanvas);
+
+            // Add theme change observer with debounce
+            let themeChangeTimeout;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'data-theme') {
+                        // Clear any existing timeout
+                        if (themeChangeTimeout) {
+                            clearTimeout(themeChangeTimeout);
+                        }
+                        // Set a new timeout to redraw the clock
+                        themeChangeTimeout = setTimeout(() => {
+                            drawClock();
+                        }, 0); // Execute immediately after the current transition starts
+                    }
+                });
+            });
+
+            // Start observing the html element for theme changes
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-theme']
+            });
+        });
+
+        console.log("josh morris - industrial design portfolio page loaded.");
+    </script>
+
+</body>
+</html>

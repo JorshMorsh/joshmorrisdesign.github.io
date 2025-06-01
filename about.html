@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>about - josh morris</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles and CSS variables for theme management */
+        :root {
+            --grid-unit: 25px;
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --transition-duration: 0.3s;
+            --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        html[data-theme='dark'] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        /* Navigation styles (fixed position) */
+        nav {
+            position: fixed;
+            top: calc(var(--grid-unit) * 2);
+            left: calc(var(--grid-unit) * 2);
+            z-index: 100;
+        }
+
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: var(--grid-unit);
+            margin-bottom: 0;
+            transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main content area using Grid */
+        .main-content-grid {
+            display: grid;
+            /* Two columns: Blurb and Image */
+            grid-template-columns: 1fr 1fr; /* Equal width columns */
+            /* Add top padding to avoid content being hidden by fixed nav */
+            padding-top: calc(var(--grid-unit) * 6);
+            /* Add left padding to align grid content with fixed nav */
+            padding-left: calc(var(--grid-unit) * 2);
+            padding-right: calc(var(--grid-unit) * 2);
+            gap: calc(var(--grid-unit) * 2); /* Gap between columns */
+            min-height: calc(100vh - calc(var(--grid-unit) * 6)); /* Ensure grid takes up remaining height */
+            box-sizing: border-box;
+            align-items: start; /* Align grid items to the top */
+        }
+
+         .about-section {
+             /* Container for blurb and image */
+         }
+
+        .about-blurb {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: calc(var(--grid-unit) * 2); /* Space below blurb */
+        }
+
+        .headshot-container {
+            /* Container for the headshot image */
+            display: flex;
+            justify-content: center; /* Center image if it's smaller than the column */
+        }
+
+        .headshot-container img {
+            max-width: 100%; /* Ensure image doesn't overflow its container */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Remove extra space below image */
+        }
+
+        /* Theme Toggle Button styles (keep existing) */
+        .theme-toggle {
+            position: fixed;
+            top: var(--grid-unit);
+            right: var(--grid-unit);
+            cursor: pointer;
+            z-index: 50;
+            background-color: transparent;
+            border: none;
+            padding: 8px;
+            color: var(--text-color);
+            transition: all var(--transition-duration) var(--transition-timing);
+            border-radius: 0.5rem;
+        }
+
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        html[data-theme='light'] .theme-toggle #icon-sun { display: none; }
+        html[data-theme='light'] .theme-toggle #icon-moon { display: block; }
+        html[data-theme='dark'] .theme-toggle #icon-sun { display: block; }
+        html[data-theme='dark'] .theme-toggle #icon-moon { display: none; }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-content-grid {
+                 grid-template-columns: 1fr; /* Single column */
+                 padding-left: var(--grid-unit);
+                 padding-right: var(--grid-unit);
+                 gap: calc(var(--grid-unit) * 1.5);
+            }
+             .about-blurb {
+                 margin-bottom: calc(var(--grid-unit) * 1.5); /* Space below blurb in single column */
+            }
+            nav {
+                top: var(--grid-unit);
+                left: var(--grid-unit);
+            }
+            .theme-toggle {
+                top: calc(var(--grid-unit) * 0.5);
+                right: calc(var(--grid-unit) * 0.5);
+            }
+             .headshot-container {
+                 justify-content: flex-start; /* Align image to the left in single column */
+             }
+        }
+
+        @media (max-width: 480px) {
+             .main-content-grid {
+                 gap: var(--grid-unit);
+            }
+            .about-blurb {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">home_</a>
+        <a href="work.html">work_</a>
+        <a href="contact.html">contact_</a>
+    </nav>
+
+    <div class="main-content-grid">
+        <div class="about-section">
+            <p class="about-blurb">This is where you can write a brief blurb about yourself. Share your background, passion for industrial design, and what drives your work.</p>
+        </div>
+        <div class="headshot-container">
+            <!-- Replace 'your-headshot.jpg' with your actual image file and path -->
+            <img src="your-headshot.jpg" alt="Your Headshot">
+        </div>
+    </div>
+
+    <button id="darkModeToggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle theme" aria-pressed="false">
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
+
+    <script>
+        // Theme toggle functionality
+        const htmlElement = document.documentElement;
+        const themeToggleButton = document.getElementById('darkModeToggle');
+
+        function applyThemePreference(theme) {
+            htmlElement.setAttribute('data-theme', theme);
+            themeToggleButton.setAttribute('aria-pressed', theme === 'dark');
+        }
+
+        function setThemeAndStore(theme) {
+            applyThemePreference(theme);
+        }
+
+        // Initialize theme on page load
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+
+        // Listen for changes in system color scheme preference
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            applyThemePreference(e.matches ? 'dark' : 'light');
+        });
+
+        // Event listener for theme toggle button
+        themeToggleButton.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setThemeAndStore(newTheme);
+        });
+    </script>
+</body>
+</html> 
