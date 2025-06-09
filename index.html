@@ -163,15 +163,85 @@
         /* Braun Style Clock */
         #clockCanvas {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px; /* Adjust size as needed */
-            height: 300px; /* Adjust size as needed */
-            border: 4px solid var(--text-color); /* Clock border color */
+            bottom: calc(var(--grid-unit) * 2); /* 50px from bottom */
+            right: calc(var(--grid-unit) * 2); /* 50px from right */
+            width: 120px; /* Further reduced size */
+            height: 120px; /* Further reduced size */
+            border: 2px solid var(--text-color); /* Thinner border */
             border-radius: 50%; /* Make it circular */
             z-index: 5; /* Below nav/main, above body background */
             transition: all var(--transition-duration) var(--transition-timing);
+        }
+
+        /* Responsive adjustments for clock */
+        @media (max-width: 768px) {
+            #clockCanvas {
+                bottom: var(--grid-unit);
+                right: var(--grid-unit);
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #clockCanvas {
+                bottom: calc(var(--grid-unit) * 0.5);
+                right: calc(var(--grid-unit) * 0.5);
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        /* Manila folders styles from testing grouds */
+        .filing-cabinet {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 48px;
+            height: auto;
+            padding-bottom: 0;
+            background: transparent;
+        }
+        .folder {
+            width: 340px;
+            height: 260px;
+            border-radius: 16px;
+            transition: transform 0.3s cubic-bezier(.4,1.5,.5,1);
+            cursor: pointer;
+            z-index: 1;
+            background: transparent;
+            object-fit: contain;
+        }
+        .folder:nth-child(2) {
+            z-index: 2;
+        }
+        .folder:nth-child(3) {
+            z-index: 3;
+        }
+        .folder:hover {
+            transform: translateY(-35px);
+            z-index: 10;
+        }
+
+        .folders-center-wrapper {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* So nav/clock/main still work */
+            z-index: 1;
+        }
+        .filing-cabinet {
+            pointer-events: auto; /* So folders are clickable */
+        }
+        #clockCanvas {
+            width: 70px !important;
+            height: 70px !important;
+            min-width: 70px !important;
+            min-height: 70px !important;
+            max-width: 70px !important;
+            max-height: 70px !important;
         }
     </style>
 </head>
@@ -189,6 +259,15 @@
         <h1>josh morris</h1>
         <p class="subtitle">industrial designer</p>
     </main>
+
+    <!-- Manila folders section centered -->
+    <div class="folders-center-wrapper">
+      <div class="filing-cabinet">
+        <img class="folder" src="Asset 2.svg" alt="Folder 1" />
+        <img class="folder" src="Asset 3.svg" alt="Folder 2" />
+        <img class="folder" src="Asset 4.svg" alt="Folder 3" />
+      </div>
+    </div>
 
     <button id="darkModeToggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle theme" aria-pressed="false">
         <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -261,9 +340,21 @@
 
             // Function to draw the clock face (circle and center dot)
             function drawFace(ctx, radius) {
+                // Calculate the actual center coordinates in the scaled context
+                const canvasWidth = clockCanvas.width / (window.devicePixelRatio || 1);
+                const canvasHeight = clockCanvas.height / (window.devicePixelRatio || 1);
+                const centerX = 0; // We are already translated to the center
+                const centerY = 0; // We are already translated to the center
+
+                // The radius passed here is for the hands, the face should use a radius relative to the canvas size
+                // Let's calculate a radius for the face based on the smaller dimension of the display size, accounting for the CSS border.
+                const displayWidth = clockCanvas.offsetWidth;
+                const displayHeight = clockCanvas.offsetHeight;
+                const faceRadius = Math.min(displayWidth, displayHeight) / 2 * 0.98; // Use almost the full radius inside the border
+
                 // Draw inner circle (background)
                 ctx.beginPath();
-                ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+                ctx.arc(centerX, centerY, faceRadius, 0, 2 * Math.PI);
                 ctx.fillStyle = 'white'; // Clock face background
                 ctx.fill();
 
@@ -271,7 +362,7 @@
 
                 // Center dot - Braun style is often simple, just a dot
                 ctx.beginPath();
-                ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+                ctx.arc(centerX, centerY, faceRadius * 0.05, 0, 2 * Math.PI); // Use a radius relative to the face radius
                 ctx.fillStyle = getCurrentTextColor(); // Use current text color
                 ctx.fill();
             }
@@ -339,19 +430,28 @@
                 const displayWidth = clockCanvas.offsetWidth;
                 const displayHeight = clockCanvas.offsetHeight;
 
-                // If the canvas drawing buffer size doesn't match the display size, update it
-                if (clockCanvas.width !== displayWidth || clockCanvas.height !== displayHeight) {
-                    clockCanvas.width = displayWidth;
-                    clockCanvas.height = displayHeight;
+                // Get the device pixel ratio
+                const dpr = window.devicePixelRatio || 1;
 
-                    // Recalculate radius and reset/re-apply translation after resizing
-                    radius = Math.min(clockCanvas.width, clockCanvas.height) / 2; // Use the smaller dimension for radius
-                    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transformation
-                    ctx.translate(clockCanvas.width / 2, clockCanvas.height / 2); // Translate to the new center
-                    radius = radius * 0.90; // Adjust radius for padding/border if needed
+                // Set the canvas size accounting for device pixel ratio
+                clockCanvas.width = displayWidth * dpr;
+                clockCanvas.height = displayHeight * dpr;
 
-                    drawClock(); // Redraw clock after resize
-                }
+                // Reset transformation matrix to identity
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+                // Translate to the center of the canvas's physical pixels
+                ctx.translate(clockCanvas.width / 2, clockCanvas.height / 2);
+
+                // Scale the context for high DPI
+                ctx.scale(dpr, dpr);
+
+                // Recalculate radius based on *display* size
+                // This radius is used for drawing the clock hands
+                radius = Math.min(displayWidth, displayHeight) / 2; // Use the smaller dimension for display radius
+                radius = radius * 0.95; // Adjust radius for padding and to fit within the border
+
+                drawClock(); // Redraw clock after resize
             };
 
             // Initial setup and draw
