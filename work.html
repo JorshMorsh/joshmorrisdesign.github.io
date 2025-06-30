@@ -91,6 +91,7 @@
             font-size: 0.9rem; /* Reduced font size */
             line-height: 1.5;
             margin-top: 0; /* Remove default margin top */
+            text-align: left; /* Left justify the text */
         }
 
         /* Styles for the rightmost column (PDF Viewer and Nav Buttons) */
@@ -105,14 +106,12 @@
             width: 100%;
             /* Adjust height to fill the grid cell height */
              height: calc(100vh - calc(var(--grid-unit) * 8)); /* This height calculation might need refinement based on final layout */
-            overflow: auto; /* Add scrolling if PDF is larger than container */
+            overflow: hidden; /* Remove scrolling - hide scroll bars */
              display: block; /* Change back to block for simpler sizing within flex item */
         }
 
         /* Style for individual PDF pages rendered as canvas */
         .pdfPage canvas {
-            max-width: 100%; /* Ensure pages don't overflow container */
-            height: auto; /* Maintain aspect ratio */
              /* Center canvas horizontally within the overflow:auto div */
              display: block;
              margin-left: auto;
@@ -230,6 +229,22 @@
                  font-size: 0.9rem;
             }
         }
+
+        .project-subtitle {
+            font-size: 1rem; /* fallback for older browsers */
+            font-size: 50%;
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 0.01em;
+            vertical-align: middle;
+            margin-left: 0.5em;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            .project-subtitle {
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -240,12 +255,12 @@
     </nav>
 
     <!-- Project 1 Section -->
-    <div class="main-content-grid">
+    <div class="main-content-grid" id="project1">
         <div class="project-title-container">
-            <h1 class="project-title">project name 1</h1>
+            <h1 class="project-title">Mobii <span class="project-subtitle"><em>Kitchen Module</em></span></h1>
         </div>
         <div class="project-blurb-container">
-            <p class="project-blurb">This is where the blurb for project 1 will go.</p>
+            <p class="project-blurb">Mobii is a mobile kitchen island designed for students, addressing common living space challenges like limited counter space and inadequate storage. It provides a dedicated food preparation area with features like an indentation for organizing spices and a cutoffs bin. The lower section offers ample storage for food, pots, and cleaning supplies, promoting organization. Crucially, Mobii's mobility allows users to easily relocate their workstation, alleviating the stress associated with frequent moves and enhancing comfort in their surroundings.</p>
         </div>
 
         <div class="pdf-viewer-area">
@@ -258,12 +273,12 @@
     </div>
 
     <!-- Project 2 Section -->
-    <div class="main-content-grid">
+    <div class="main-content-grid" id="project2">
         <div class="project-title-container">
-            <h1 class="project-title">project name 2</h1>
+            <h1 class="project-title">Tibio <span class="project-subtitle"><em>Leibal Chair</em></span></h1>
         </div>
         <div class="project-blurb-container">
-            <p class="project-blurb">This is where the blurb for project 2 will go.</p>
+            <p class="project-blurb">In this course, I embarked on a design journey to create a collection for Leibal, a brand renowned for its minimalist and beautiful designs. My process began with ideating three distinct objects: a carafe, a chair, and a light. From these initial concepts, I chose to refine the chair, diving deeper into material exploration and structural innovation.</p>
         </div>
 
         <div class="pdf-viewer-area">
@@ -276,7 +291,7 @@
     </div>
 
     <!-- Project 3 Section -->
-    <div class="main-content-grid">
+    <div class="main-content-grid" id="project3">
         <div class="project-title-container">
             <h1 class="project-title">project name 3</h1>
         </div>
@@ -327,11 +342,19 @@
 
         function setThemeAndStore(theme) {
             applyThemePreference(theme);
+            // Store theme preference in localStorage for persistence across pages
+            localStorage.setItem('theme', theme);
         }
 
         // Initialize theme on page load
-        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        // Check localStorage first, then fall back to system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyThemePreference(savedTheme);
+        } else {
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        }
 
         // Listen for changes in system color scheme preference
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -365,19 +388,19 @@
 
                 pdfDoc.getPage(num).then(function(page) {
                     const containerWidth = pdfViewer.clientWidth;
-                    const containerHeight = pdfViewer.clientHeight;
-                    const viewport = page.getViewport({ scale: 1 });
-                    const scale_w = containerWidth / viewport.width;
-                    const scale_h = containerHeight / viewport.height;
-                    const scale = Math.min(scale_w, scale_h);
-                    const scaledViewport = page.getViewport({ scale: scale });
+                    // Use window.devicePixelRatio for higher resolution rendering
+                    const scale = containerWidth / page.getViewport({ scale: 1 }).width;
+                    const viewport = page.getViewport({ scale: scale * window.devicePixelRatio });
 
-                    canvas.height = scaledViewport.height;
-                    canvas.width = scaledViewport.width;
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    canvas.style.width = `${containerWidth}px`;
+                    canvas.style.height = `${(viewport.height / viewport.width) * containerWidth}px`;
+
 
                     const renderContext = {
                         canvasContext: ctx,
-                        viewport: scaledViewport
+                        viewport: viewport
                     };
                     const renderTask = page.render(renderContext);
 
@@ -441,10 +464,10 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdfjs/build/pdf.worker.mjs';
 
             // Load and render PDF for Project 1
-            loadAndRenderPDF('Untitled-1.pdf', 'pdfViewer1', 'prev1', 'next1');
+            loadAndRenderPDF('PD488_JoshMorris_Book1.pdf', 'pdfViewer1', 'prev1', 'next1');
 
             // Load and render PDF for Project 2
-            loadAndRenderPDF('Untitled-2.pdf', 'pdfViewer2', 'prev2', 'next2');
+            loadAndRenderPDF('PD487_FinalPortfolio_JoshMorris.pdf', 'pdfViewer2', 'prev2', 'next2');
 
             // Load and render PDF for Project 3
             loadAndRenderPDF('Untitled-3.pdf', 'pdfViewer3', 'prev3', 'next3');

@@ -160,7 +160,7 @@
 
     <div class="main-content-grid">
         <div class="about-section">
-            <p class="about-blurb">This is where you can write a brief blurb about yourself. Share your background, passion for industrial design, and what drives your work.</p>
+            <p class="about-blurb">I am a multi-talented maker, artist, and designer, emphasizing CAD design, ceramics, and woodworking. I am excited to work in collaborative settings and have the opportunity to gain insights from diverse perspectives. With a passion for innovation and a keen eye for detail, I thrive on creating solutions that merge functionality and aesthetics in a meaningful way.</p>
         </div>
         <div class="headshot-container">
             <!-- Replace 'your-headshot.jpg' with your actual image file and path -->
@@ -197,11 +197,19 @@
 
         function setThemeAndStore(theme) {
             applyThemePreference(theme);
+            // Store theme preference in localStorage for persistence across pages
+            localStorage.setItem('theme', theme);
         }
 
         // Initialize theme on page load
-        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        // Check localStorage first, then fall back to system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyThemePreference(savedTheme);
+        } else {
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        }
 
         // Listen for changes in system color scheme preference
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

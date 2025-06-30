@@ -201,6 +201,9 @@
             height: auto;
             padding-bottom: 0;
             background: transparent;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         .folder {
             width: 340px;
@@ -223,17 +226,49 @@
             z-index: 10;
         }
 
+        /* Folder button styles */
+        .folder-button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(.4,1.5,.5,1);
+        }
+        .folder-button:nth-child(2) {
+            z-index: 2;
+        }
+        .folder-button:nth-child(3) {
+            z-index: 3;
+        }
+        .folder-button:hover {
+            transform: translateY(-35px);
+            z-index: 10;
+        }
+        .folder-button:hover .folder {
+            transform: none; /* Prevent double transform */
+        }
+        .folder-button:focus {
+            outline: none;
+        }
+        .folder-button:active {
+            transform: translateY(-30px);
+        }
+
         .folders-center-wrapper {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            pointer-events: none; /* So nav/clock/main still work */
+            pointer-events: none;
             z-index: 1;
+            padding: 20px;
         }
         .filing-cabinet {
-            pointer-events: auto; /* So folders are clickable */
+            pointer-events: auto;
         }
         #clockCanvas {
             width: 70px !important;
@@ -242,6 +277,53 @@
             min-height: 70px !important;
             max-width: 70px !important;
             max-height: 70px !important;
+        }
+
+        /* Responsive adjustments for folders */
+        @media (max-width: 1200px) {
+            .filing-cabinet {
+                gap: 32px;
+            }
+            .folder {
+                width: 280px;
+                height: 210px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .filing-cabinet {
+                gap: 24px;
+            }
+            .folder {
+                width: 220px;
+                height: 165px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filing-cabinet {
+                gap: 16px;
+            }
+            .folder {
+                width: 180px;
+                height: 135px;
+            }
+            .folder-button:hover {
+                transform: translateY(-20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filing-cabinet {
+                gap: 12px;
+            }
+            .folder {
+                width: 140px;
+                height: 105px;
+            }
+            .folder-button:hover {
+                transform: translateY(-15px);
+            }
         }
     </style>
 </head>
@@ -263,9 +345,15 @@
     <!-- Manila folders section centered -->
     <div class="folders-center-wrapper">
       <div class="filing-cabinet">
-        <img class="folder" src="Asset 2.svg" alt="Folder 1" />
-        <img class="folder" src="Asset 3.svg" alt="Folder 2" />
-        <img class="folder" src="Asset 4.svg" alt="Folder 3" />
+        <button class="folder-button" onclick="window.location.href='work.html#project1'">
+          <img class="folder" src="Asset 2.svg" alt="Project 1" />
+        </button>
+        <button class="folder-button" onclick="window.location.href='work.html#project2'">
+          <img class="folder" src="Asset 3.svg" alt="Project 2" />
+        </button>
+        <button class="folder-button" onclick="window.location.href='work.html#project3'">
+          <img class="folder" src="Asset 4.svg" alt="Project 3" />
+        </button>
       </div>
     </div>
 
@@ -301,12 +389,19 @@
 
         function setThemeAndStore(theme) {
             applyThemePreference(theme);
-            // Note: localStorage removed for Claude.ai compatibility
+            // Store theme preference in localStorage for persistence across pages
+            localStorage.setItem('theme', theme);
         }
 
         // Initialize theme on page load
-        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        // Check localStorage first, then fall back to system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyThemePreference(savedTheme);
+        } else {
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        }
 
         // Listen for changes in system color scheme preference
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

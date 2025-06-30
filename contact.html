@@ -172,7 +172,7 @@
     <div class="main-content">
         <a href="https://www.linkedin.com/in/josh-a-morris/" class="contact-link">linkedin_</a>
         <a href="mailto:joshua.a.morris@outlook.com" class="contact-link">email_</a>
-        <a href="Josh_Morris_Resume (042825)" class="resume-button" download>resume_</a>
+        <a href="Josh_Morris_Resume (062725).docx" class="resume-button" download>resume_</a>
     </div>
 
     <button id="darkModeToggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle theme" aria-pressed="false">
@@ -204,11 +204,19 @@
 
         function setThemeAndStore(theme) {
             applyThemePreference(theme);
+            // Store theme preference in localStorage for persistence across pages
+            localStorage.setItem('theme', theme);
         }
 
         // Initialize theme on page load
-        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        // Check localStorage first, then fall back to system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyThemePreference(savedTheme);
+        } else {
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyThemePreference(systemPrefersDark ? 'dark' : 'light');
+        }
 
         // Listen for changes in system color scheme preference
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
